@@ -15,6 +15,7 @@
 | M5 判验 | 比较两端允许偏差并查看总伸长 | `GET /api/verdicts/{id}` | `app/modules/m5_verdicts/service.py` | `tests/test_verdicts.py` |
 | M6 勾稽 | 检查读数守恒及梁的钢束归类 | `GET /api/reconcile/{id}` | `app/modules/m6_reconcile/service.py` | `tests/test_reconcile.py` |
 | M7 复算 | 重跑班次、查看批号并导出 | `GET /api/runs/{id}` | `app/modules/m7_runs/service.py` | `tests/test_runs.py` |
+| M8 签发 | 签发、撤回与补签张拉证据；按凭据号取回签发依据 | `GET /api/evidence/{id}`, `POST /api/evidence/{id}/issue`, `POST /api/evidence/{id}/revoke`, `GET /api/evidence/receipt/{serial}` | `app/modules/m8_evidence/service.py` | `tests/test_evidence.py` |
 
 ## 陷阱登记
 
@@ -30,6 +31,10 @@
 | TRAP-17 | 夜班表旧列 extension | 位移丢失 | 双字段择一兼容 | `app/modules/m1_sampling/service.py` | `tests/test_sampling.py::test_legacy_field` |
 | TRAP-23 | 校准证书刚开始生效 | 误报过期 | 生效日含左端 | `app/modules/m2_calibration/registry.py` | `tests/test_calibration.py::test_valid_at_start` |
 | TRAP-25 | 同一千斤顶两个证书同日有效 | 随顺序选版 | 隔离对应压力读数 | `app/modules/m2_calibration/service.py` | `tests/test_calibration.py::test_overlap_has_evidence` |
+| TRAP-31 | 勾稽有差额仍签发 | 证据带着差额流出 | 复核行差，拒签但保留复算结果 | `app/modules/m8_evidence/service.py` | `tests/test_evidence.py::test_balance_blocks_issuing_but_result_still_readable` |
+| TRAP-32 | 撤回报废原凭据 | 监理按原号查不到签收依据 | 撤回只改状态，原号快照仍可查 | `app/modules/m8_evidence/store.py` | `tests/test_evidence.py::test_revoke_keeps_original_receipt_and_reissues_new_number` |
+| TRAP-33 | 补签沿用原号 | 同一号指向两份不同依据 | 补签换新号并记 `supersedes` | `app/modules/m8_evidence/service.py` | `tests/test_evidence.py::test_revoke_keeps_original_receipt_and_reissues_new_number` |
+| TRAP-34 | 两人同时签发或补签 | 同一班次出现两份有效凭据 | 部分唯一索引加 `BEGIN IMMEDIATE`，重试不新增记录 | `app/modules/m8_evidence/store.py` | `tests/test_evidence.py::test_concurrent_issue_keeps_single_valid` |
 
 ## 对账与限制
 

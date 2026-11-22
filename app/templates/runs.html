@@ -1,6 +1,39 @@
 {% extends "base.html" %}
 {% from "records.jinja" import table %}
 {% block stage %}<div class="tables">
-  <section class="panel"><h2>班次档案</h2><ul class="archive">{% for row in recent %}<li><a href="{{ url_for('desk',stage='runs',run=row['编号']) }}">{{ row['编号'] }} · {{ row['计算时间'] }}</a></li>{% endfor %}</ul></section>
+  <section class="panel evidence-panel">
+    <h2>证据签发 <small>{{ evidence['状态'] }}</small></h2>
+    <div class="evidence-body">
+      <p class="evidence-line">
+        <span class="badge evidence" data-status="{{ evidence['状态'] }}">{{ evidence['状态'] }}</span>
+        {% if evidence['凭据'] %}<code>{{ evidence['凭据']['凭据号'] }}</code><span class="muted">{{ evidence['凭据']['签发人'] }} · {{ evidence['凭据']['签发时间'] }}</span>{% endif %}
+      </p>
+      {% if evidence['状态'] == '待签' %}
+        {% if run['读数勾稽']['行差'] or run['梁号勾稽']|selectattr('行差')|list %}
+          <p class="empty">勾稽存在差额，复算结果照常可查，但证据不能签发。</p>
+        {% else %}
+          <form class="evidence-form" action="{{ url_for('evidence.sign', key=meta['编号']) }}" method="post">
+            <label>签发人<input name="actor" maxlength="60" placeholder="班组质检员"></label>
+            <button type="submit">签发证据</button>
+          </form>
+        {% endif %}
+      {% elif evidence['状态'] == '有效' %}
+        <form class="evidence-form" action="{{ url_for('evidence.cancel', key=meta['编号']) }}" method="post">
+          <label>撤回人<input name="actor" maxlength="60" placeholder="班组质检员"></label>
+          <label>撤回原因<input name="reason" maxlength="200" placeholder="错签撤回"></label>
+          <button type="submit" class="danger">撤回凭据</button>
+        </form>
+      {% else %}
+        <form class="evidence-form" action="{{ url_for('evidence.sign', key=meta['编号']) }}" method="post">
+          <label>补签人<input name="actor" maxlength="60" placeholder="班组质检员"></label>
+          <button type="submit">补签新凭据</button>
+        </form>
+        <p class="muted">已撤回的凭据按原号保留，补签将生成新凭据号。</p>
+      {% endif %}
+      <output id="evidence-notice" role="status"></output>
+    </div>
+  </section>
+  <section class="panel"><h2>班次档案</h2><ul class="archive">{% for row in recent %}<li><a href="{{ url_for('desk',stage='runs',run=row['编号']) }}">{{ row['编号'] }} · {{ row['计算时间'] }}</a><span class="badge evidence" data-status="{{ row['证据状态'] }}">{{ row['证据状态'] }}</span></li>{% endfor %}</ul></section>
+  {% if evidence['历史'] %}{{ table('凭据档案', evidence['历史']) }}{% endif %}
   {{ table('计算清单',[meta]) }}
 </div>{% endblock %}

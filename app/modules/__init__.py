@@ -8,6 +8,7 @@ MODULES = (
     "m5_verdicts",
     "m6_reconcile",
     "m7_runs",
+    "m8_evidence",
 )
 
 

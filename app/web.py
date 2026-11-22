@@ -7,6 +7,10 @@ def history():
     return current_app.extensions["beam-history"]
 
 
+def evidence():
+    return current_app.extensions["beam-evidence"]
+
+
 def batch(key):
     dataset = history().find(key)
     if not dataset:

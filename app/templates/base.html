@@ -11,7 +11,13 @@
     <p>制梁场 · 工序质检</p>
   </aside>
   <div class="board">
-    <header><h1>{{ stages[active] }}</h1><a class="outline" href="{{ url_for('export',key=meta['编号']) }}">下载张拉证据</a></header>
+    <header><h1>{{ stages[active] }}</h1>
+      <div class="evidence-bar">
+        <span class="badge evidence" data-status="{{ evidence['状态'] }}">证据{{ evidence['状态'] }}</span>
+        {% if evidence['凭据'] %}<code class="receipt-no">{{ evidence['凭据']['凭据号'] }}</code>{% endif %}
+        <a class="outline" href="{{ url_for('export',key=meta['编号']) }}">下载张拉证据</a>
+      </div>
+    </header>
     <main>
       <div class="kpis" aria-label="读数统计">{% for name,count in run['读数勾稽'].items() %}<div><span>{{ name }}</span><strong>{{ count }}</strong><span>条</span></div>{% endfor %}</div>
       <form id="calculate" action="/api/runs" method="post" enctype="multipart/form-data">

@@ -4,8 +4,10 @@ from app.config import BASE, MATCH_LIMIT, SAMPLES, STAGES, VERSION
 from app.modules import register
 from app.modules.m7_runs.service import run_once
 from app.modules.m7_runs.store import History
+from app.modules.m8_evidence.service import describe, download_notice
+from app.modules.m8_evidence.store import EvidenceStore
 from app.types import DataFault
-from app.web import batch, history, raw_sample
+from app.web import batch, evidence, history, raw_sample
 from flask import Flask, abort, jsonify, render_template, request, url_for
 
 PAGE_SECTIONS = {
@@ -31,6 +33,7 @@ def create_app(settings=None):
     app.json.ensure_ascii = False
     app.json.sort_keys = False
     app.extensions["beam-history"] = History(app.config["DATABASE"])
+    app.extensions["beam-evidence"] = EvidenceStore(app.config["DATABASE"])
     register(app)
 
     @app.errorhandler(DataFault)
@@ -63,6 +66,11 @@ def create_app(settings=None):
             for r in data["补偿记录"]
             if chosen and (r["梁号"], r["钢束"]) == (chosen["梁号"], chosen["钢束"])
         }
+        recent_rows = history().recent() if stage == "runs" else []
+        if recent_rows:
+            states = evidence().statuses([row["编号"] for row in recent_rows])
+            for row in recent_rows:
+                row["证据状态"] = states.get(row["编号"], "待签")
         return render_template(
             f"{stage}.html",
             stages=STAGES,
@@ -75,12 +83,18 @@ def create_app(settings=None):
             meta=data["清单"],
             strand=chosen,
             sides=sides,
-            recent=history().recent() if stage == "runs" else [],
+            evidence=describe(evidence(), data["清单"]["编号"]),
+            recent=recent_rows,
         )
 
     @app.get("/api/runs")
     def recent():
-        return jsonify(history().recent())
+        rows = history().recent()
+        codes = [row["编号"] for row in rows]
+        states = evidence().statuses(codes)
+        for row in rows:
+            row["证据状态"] = states.get(row["编号"], "待签")
+        return jsonify(rows)
 
     @app.post("/api/runs")
     def inspect():
@@ -104,8 +118,34 @@ def create_app(settings=None):
 
     @app.get("/api/export/<key>")
     def export(key):
-        result = jsonify(batch(key))
+        data = batch(key)
+        payload = {"证据凭证": download_notice(data, evidence()), **data}
+        result = jsonify(payload)
         result.headers.set("Content-Disposition", "attachment", filename=f"stretch-{key}.json")
+        return result
+
+    @app.get("/api/evidence/receipt/<serial>/export")
+    def export_receipt(serial):
+        record = evidence().find(serial)
+        if not record:
+            abort(404)
+        # 按原凭据号导出签发时冻结的依据，即使该凭据已撤回也照常可查。
+        payload = {
+            "证据凭证": {
+                "状态": record["状态"],
+                "凭据号": record["凭据号"],
+                "签发时间": record["签发时间"],
+                "签发人": record["签发人"],
+                "撤回时间": record["撤回时间"],
+                "撤回原因": record["撤回原因"],
+            },
+            "凭据": {k: v for k, v in record.items() if k != "快照"},
+            "快照": record["快照"],
+        }
+        result = jsonify(payload)
+        result.headers.set(
+            "Content-Disposition", "attachment", filename=f"evidence-{record['凭据号']}.json"
+        )
         return result
 
     return app
