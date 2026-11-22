@@ -1,0 +1,27 @@
+<!doctype html><html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ stages[active] }} · 预制梁张拉</title>
+  {% for file in ('theme.css','layout.css','readout.css') %}<link rel="stylesheet" href="{{ url_for('static',filename=file) }}">{% endfor %}
+  <script src="{{ url_for('static',filename='scale.js') }}" defer></script>
+</head>
+<body>
+  <aside class="side"><a href="/" class="brand"><span aria-hidden="true" class="anchor"></span><strong>预制梁张拉</strong></a>
+    <nav aria-label="张拉流程">{% for key,title in stages.items() %}<a href="{{ url_for('desk',stage=key,run=meta['编号'],sample=current) }}" {% if key==active %}aria-current="page"{% endif %}><small>{{ '%02d'|format(loop.index) }}</small>{{ title }}</a>{% endfor %}</nav>
+    <p>制梁场 · 工序质检</p>
+  </aside>
+  <div class="board">
+    <header><h1>{{ stages[active] }}</h1><a class="outline" href="{{ url_for('export',key=meta['编号']) }}">下载张拉证据</a></header>
+    <main>
+      <div class="kpis" aria-label="读数统计">{% for name,count in run['读数勾稽'].items() %}<div><span>{{ name }}</span><strong>{{ count }}</strong><span>条</span></div>{% endfor %}</div>
+      <form id="calculate" action="/api/runs" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="stage" value="{{ active }}">
+        <label>班组记录<select name="sample">{% for slug,title in labels.items() %}<option value="{{ slug }}" {% if slug==current %}selected{% endif %}>{{ title }}</option>{% endfor %}</select></label>
+        <label>上传记录<input name="file" type="file" accept=".json,application/json"></label>
+        <button type="submit">复算读数</button><output id="notice" role="status">{% if reused %}已复用班次结果{% endif %}</output>
+      </form>
+      {% block stage %}{% endblock %}
+    </main>
+    <footer><code>{{ meta['编号'] }}</code><span>{{ meta['规则'] }} · {{ meta['计算时间'] }} · {{ meta['时区'] }}</span></footer>
+  </div>
+</body></html>

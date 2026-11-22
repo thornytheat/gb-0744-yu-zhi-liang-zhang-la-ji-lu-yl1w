@@ -1,0 +1,44 @@
+.panel { min-width: 0; border: 1px solid var(--line-dark); background: var(--paper); border-radius: var(--round); }
+h2 { margin: 0; padding: 9px 12px; font-size: 15px; border-bottom: 1px solid var(--line); display: flex; align-items: baseline; justify-content: space-between; }
+h2 small { font-size: 11px; color: var(--muted); }
+.gauge { border-top: 4px solid var(--accent); }
+.gauge .value { font: 720 clamp(25px,4vw,53px)/1 var(--mono); font-variant-numeric: tabular-nums; padding: 14px 16px 5px; text-align: right; }
+.gauge-R .value { text-align: left; }
+meter { display: block; width: calc(100% - 32px); height: 15px; margin: 0 16px; accent-color: var(--accent); }
+.gauge-L meter { direction: rtl; }
+meter::-webkit-meter-optimum-value { background: var(--accent); }
+dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 5px; padding: 0 15px; }
+dl div { border-top: 1px solid var(--line); padding-top: 5px; }
+dt { color: var(--muted); font-size: 11px; }
+dd { margin: 0; font-family: var(--mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.comparison { display: grid; place-content: center; justify-items: center; gap: 6px; min-height: 110px; background: var(--paper-deep); text-align: center; border-inline: 2px solid var(--accent); }
+.comparison strong { font: 700 29px var(--mono); }
+.comparison span { color: var(--muted); font-size: 12px; }
+.badge { border: 1px solid currentColor; padding: 2px 8px; }
+.badge[data-status="通过"] { color: var(--ok); }
+.badge[data-status="待复测"] { color: var(--warn); }
+.badge[data-status="超限"], output[data-error] { color: var(--bad); }
+.scroller { max-height: 310px; overflow: auto; }
+table { width: 100%; border-spacing: 0; white-space: nowrap; }
+th { position: sticky; top: 0; background: var(--paper-deep); }
+th, td { text-align: left; padding: 3px 10px; height: var(--row); border-bottom: 1px solid var(--line); font-size: 12px; }
+td:first-child { border-left: 3px solid transparent; }
+tbody tr:hover td:first-child { border-left-color: var(--accent); }
+tbody tr:nth-child(even) { background: #faf0de; }
+td.number { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono); }
+.outline, button, select, input { color: var(--ink); font: 13px var(--font); border: 1px solid var(--line-dark); border-radius: 2px; background: var(--paper); padding: 6px 9px; }
+a.outline { text-decoration: none; color: var(--accent-dark); }
+button { cursor: pointer; }
+#calculate button { background: var(--accent-dark); color: var(--accent-contrast); border-color: var(--accent-dark); }
+input[type="file"] { width: 170px; max-width: 100%; }
+output { align-self: center; color: var(--ok); }
+:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+.empty { margin: 13px; }
+.archive { padding-inline: 29px; overflow-wrap: anywhere; }
+@media print {
+  body { display: block; background: white; color: black; }
+  .side, #calculate, .strand-pick, header a { display: none; }
+  header, footer, th { position: static; }
+  .scroller { overflow: visible; max-height: none; }
+  .gauges { break-inside: avoid; }
+}

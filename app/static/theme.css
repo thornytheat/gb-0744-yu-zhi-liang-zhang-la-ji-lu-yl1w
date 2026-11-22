@@ -1,0 +1,23 @@
+:root {
+  --bg: #f6efe1;
+  --side-bg: #352618;
+  --side-fg: #f0dfc6;
+  --paper: #fffaf0;
+  --paper-deep: #f3e8d6;
+  --ink: #362718;
+  --muted: #715942;
+  --line: #d5c3aa;
+  --line-dark: #a58568;
+  --accent: #bc6514;
+  --accent-dark: #87440c;
+  --accent-contrast: #fff7e9;
+  --ok: #226447;
+  --warn: #86570a;
+  --bad: #a4331e;
+  --mono: "Avenir Next", Menlo, monospace;
+  --font: "PingFang SC", system-ui, sans-serif;
+  --unit: 19px;
+  --round: 3px;
+  --gap: 15px;
+  --row: 31px;
+}

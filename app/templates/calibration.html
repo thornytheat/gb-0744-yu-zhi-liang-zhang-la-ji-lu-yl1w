@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% from "records.jinja" import table %}
+{% block stage %}<div class="tables">
+  {% for name in sections %}{% if run[name] is mapping %}{{ table(name,[run[name]]) }}{% else %}{{ table(name,run[name]) }}{% endif %}{% endfor %}
+  {% if sections|length == 1 %}{{ table('读数勾稽',[run['读数勾稽']]) }}{% endif %}
+</div>{% endblock %}

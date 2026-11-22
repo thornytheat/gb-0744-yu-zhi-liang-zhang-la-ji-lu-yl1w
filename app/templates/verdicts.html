@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "records.jinja" import table %}
+{% block stage %}
+  {% if strand %}
+    <form class="strand-pick" action="{{ url_for('desk',stage='verdicts') }}" method="get">
+      <input type="hidden" name="run" value="{{ meta['编号'] }}"><input type="hidden" name="sample" value="{{ current }}">
+      <label>钢束<select name="strand">{% for row in run['判验'] %}<option value="{{ row['梁号'] }}/{{ row['钢束'] }}" {% if row==strand %}selected{% endif %}>{{ row['梁号'] }} / {{ row['钢束'] }}</option>{% endfor %}</select></label>
+      <button class="outline">比对两端</button>
+    </form>
+    <div class="gauges">
+      {% for side,title,stem in [('L','左端','左'),('R','右端','右')] %}
+        {% set item=sides[side] %}
+        <section class="panel gauge gauge-{{ side }}"><h2>{{ title }}伸长 <small>mm</small></h2>
+          {% if item.get('有效毫米') is not none %}
+          <div class="value">{{ item['有效毫米'] }}</div>
+          <meter value="{{ item['有效毫米'] }}" min="0" max="{{ [item['有效毫米']|float, strand[stem~'理论毫米']|float * 2]|max }}" aria-label="{{ title }}有效伸长">{{ item['有效毫米'] }}</meter>
+          <dl><div><dt>峰值</dt><dd>{{ item['峰值毫米'] }}</dd></div><div><dt>外推零点</dt><dd>{{ item['零点毫米'] }}</dd></div><div><dt>锚回缩</dt><dd>{{ item['回缩毫米'] }}</dd></div></dl>
+          {% else %}<p class="empty">{{ item['原因码'] }}</p>{% endif %}
+        </section>
+        {% if loop.first %}<section class="panel comparison" aria-label="合计判验"><span>合计 · mm</span><strong id="total">{{ strand['合计毫米'] if strand['合计毫米'] is not none else '待复测' }}</strong><span class="badge" data-status="{{ strand['判验'] }}">{{ strand['判验'] }}</span></section>{% endif %}
+      {% endfor %}
+    </div>
+  {% else %}<section class="panel"><h2>无钢束</h2><p class="empty">选择记录后复算。</p></section>{% endif %}
+  <div class="tables">{{ table('钢束判验',run['判验']) }}{{ table('梁号勾稽',run['梁号勾稽']) }}</div>
+{% endblock %}

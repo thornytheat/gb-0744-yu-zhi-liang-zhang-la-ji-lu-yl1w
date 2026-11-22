@@ -1,0 +1,10 @@
+{% macro table(title, rows) %}
+<section class="panel">
+  <h2>{{ title }} <small>{{ rows|length }} 条</small></h2>
+  {% if rows %}<div class="scroller" tabindex="0" aria-label="{{ title }}"><table>
+    {% set columns = rows[0].keys() %}
+    <thead><tr>{% for key in columns %}<th scope="col">{{ key }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for row in rows %}<tr>{% for key in columns %}{% set value=row.get(key) %}<td class="{% if key.endswith('毫米') or key.endswith('%') or key.endswith('千牛') %}number{% endif %}">{% if value is none %}—{% elif value is iterable and value is not string %}{{ value|join('、') or '—' }}{% else %}{{ value }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody>
+  </table></div>{% else %}<p class="empty">当前批次无记录。</p>{% endif %}
+</section>
+{% endmacro %}

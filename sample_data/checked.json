@@ -1,0 +1,98 @@
+{
+  "calibrations": [
+    {
+      "jack": "J-09",
+      "revision": "J09-02",
+      "from": "2026-08-01",
+      "until": "2027-02-01",
+      "slope": "10",
+      "offset": "0"
+    }
+  ],
+  "targets": [
+    {
+      "beam": "0007",
+      "strand": "S01",
+      "day": "2026-11-20",
+      "design_kn": "1000",
+      "L_mm": "20",
+      "R_mm": "20",
+      "L_anchor": "2",
+      "R_anchor": "1"
+    }
+  ],
+  "readings": [
+    {
+      "id": "0007-S01-左-20",
+      "beam": "0007",
+      "strand": "S01",
+      "end": "左",
+      "day": "2026-11-20",
+      "jack": "J-09",
+      "level": 20,
+      "unit": "MPa",
+      "force": "20",
+      "stroke": "9"
+    },
+    {
+      "id": "0007-S01-左-40",
+      "beam": "0007",
+      "strand": "S01",
+      "end": "左",
+      "day": "2026-11-20",
+      "jack": "J-09",
+      "level": 40,
+      "unit": "MPa",
+      "force": "40",
+      "stroke": "13"
+    },
+    {
+      "id": "0007-S01-左-100",
+      "beam": "0007",
+      "strand": "S01",
+      "end": "左",
+      "day": "2026-11-20",
+      "jack": "J-09",
+      "level": 100,
+      "unit": "MPa",
+      "force": "100",
+      "stroke": "27"
+    },
+    {
+      "id": "0007-S01-R-20",
+      "beam": "0007",
+      "strand": "S01",
+      "end": "R",
+      "day": "2026-11-20",
+      "jack": "J-09",
+      "level": 20,
+      "unit": "kN",
+      "force": "200",
+      "stroke": "7"
+    },
+    {
+      "id": "0007-S01-R-40",
+      "beam": "0007",
+      "strand": "S01",
+      "end": "R",
+      "day": "2026-11-20",
+      "jack": "J-09",
+      "level": 40,
+      "unit": "kN",
+      "force": "400",
+      "stroke": "11"
+    },
+    {
+      "id": "0007-S01-R-100",
+      "beam": "0007",
+      "strand": "S01",
+      "end": "R",
+      "day": "2026-11-20",
+      "jack": "J-09",
+      "level": 100,
+      "unit": "kN",
+      "force": "1000",
+      "stroke": "24"
+    }
+  ]
+}

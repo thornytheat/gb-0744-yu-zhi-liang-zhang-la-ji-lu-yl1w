@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% from "records.jinja" import table %}
+{% block stage %}<div class="tables">
+  <section class="panel"><h2>班次档案</h2><ul class="archive">{% for row in recent %}<li><a href="{{ url_for('desk',stage='runs',run=row['编号']) }}">{{ row['编号'] }} · {{ row['计算时间'] }}</a></li>{% endfor %}</ul></section>
+  {{ table('计算清单',[meta]) }}
+</div>{% endblock %}
